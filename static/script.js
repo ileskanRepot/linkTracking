@@ -34,4 +34,11 @@ const fillTable = async (count, offset, table) => {
   }
 };
 const infoTable = document.getElementById("infotable");
-fillTable(2, 1, infoTable);
+fillTable(5, 0, infoTable);
+
+document.getElementById("sendBtn").onclick((ee) => {
+  console.log("WEE");
+  const count = document.getElementById("count").innerText;
+  const offset = document.getElementById("offset").innerText;
+  fillTable(count, offset, table);
+});
