@@ -39,11 +39,11 @@ class Database:
 		self.conn.commit()
 
 	def getData(self, offset = 0, count = 5):
-		self.cur.execute( 
-			"SELECT * FROM linkUsage ORDER BY id OFFSET %s FETCH FIRST %s ROW ONLY", 
-			(offset, count)
-			)
-		# return self.cur.fetchall().toDict()
+		ret = self.query(
+			"SELECT * FROM linkUsage ORDER BY id OFFSET %s FETCH FIRST %s ROW ONLY",
+		(offset, count)
+		)
+		print(ret)
 		return [
 			{
 				'id':link[0], 
@@ -51,14 +51,42 @@ class Database:
 				'link': link[2], 
 				'msg': link[3]
 				} 
-			for link in self.cur.fetchall()
+			for link in ret[::-1]
 			]
 
+	def getDataLen(self):
+		ret = self.query("SELECT count(*) FROM linkUsage ")
+		return ret[0][0]
+
 	def addLink(self, msg, next):
-		self.cur.execute(
-			"INSERT INTO linkUsage (msg, next, timestamp) VALUES (%s, %s, NOW())",
-			(msg, next,)
-		)
-		self.conn.commit()
+		self.execute("INSERT INTO linkUsage (msg, next, timestamp) VALUES (%s, %s, NOW())", (msg, next))
+
+	def query(self, query, args = None, tries = 5):
+		if tries <= 0:
+			return -1
+		try:
+			self.cur.execute(
+				query,
+				args
+			)
+			return self.cur.fetchall()
+		except Exception as ee:
+			print(ee)
+			self.conn = self.connect()
+			self.query(query, args, tries - 1)
+
+	def execute(self, query, args = None, tries = 5):
+		if tries <= 0:
+			return -1
+		try:
+			self.cur.execute(
+				query,
+				args
+			)
+			self.conn.commit()
+		except Exception as ee: 
+			self.conn = self.connect()
+			self.execute(query, args, tries - 1)
+
 
 db = Database()
