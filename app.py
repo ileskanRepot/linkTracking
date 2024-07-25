@@ -20,4 +20,11 @@ async def root(request: Request, nextLink: str = None, msg: str = None):
 
 @app.get("/api/linkGets")
 async def linkGets(request: Request, count: int = 5, offset: int = 0):
-	return db.getData(offset, count)
+	ret = db.getData(max(offset - count, 0), count)
+	print("RET", ret)
+	return ret
+
+@app.get("/api/count")
+async def linkGets(request: Request):
+	ret = db.getDataLen()
+	return ret
