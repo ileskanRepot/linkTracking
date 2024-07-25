@@ -1,8 +1,14 @@
 console.log("WEE");
 
-const fillTable = async (count, offset, table) => {
+const defaultTable =
+  "<tr><th>Id</th><th>Next</th><th>MSG</th><th>Date</th></tr>";
+
+const infoTable = document.getElementById("infotable");
+
+const fillTable = async (count = 5, offset = 0, table = infoTable) => {
   const resp = await fetch(`/api/linkGets?count=${count}&offset=${offset}`);
   const list = await resp.json();
+  table.innerHTML = defaultTable;
   console.log(list);
   for (const info of list) {
     const row = document.createElement("tr");
@@ -33,12 +39,41 @@ const fillTable = async (count, offset, table) => {
     table.appendChild(row);
   }
 };
-const infoTable = document.getElementById("infotable");
-fillTable(5, 0, infoTable);
+const main = async () => {
+  const resp = await fetch(`/api/count`);
+  const count = await resp.json();
+  document.getElementById("offset").value = count;
+  console.log(count);
+  fillTable(5, count, infoTable);
+};
 
-document.getElementById("sendBtn").onclick((ee) => {
-  console.log("WEE");
-  const count = document.getElementById("count").innerText;
-  const offset = document.getElementById("offset").innerText;
-  fillTable(count, offset, table);
-});
+window.onload = main();
+
+const changePage = (posNeg) => {
+  const count = parseInt(document.getElementById("count").value);
+  const offset = parseInt(document.getElementById("offset").value);
+  console.log(`${count} ${offset}`);
+  if (count == NaN || offset == NaN) {
+    return;
+  }
+  const move = Math.max(count * posNeg + offset, 0);
+  document.getElementById("offset").value = move;
+  fillTable(count, move, infoTable);
+};
+
+document.getElementById("prevBtn").onclick = (ee) => {
+  changePage(1);
+};
+document.getElementById("nextBtn").onclick = (ee) => {
+  changePage(-1);
+};
+
+document.getElementById("countForm").onchange = (ee) => {
+  const count = parseInt(document.getElementById("count").value);
+  const offset = parseInt(document.getElementById("offset").value);
+  if (count == NaN || offset == NaN) {
+    return;
+  }
+  console.log(count);
+  fillTable(count, offset, infoTable);
+};
