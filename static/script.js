@@ -2,6 +2,7 @@ console.log("WEE");
 
 const defaultTable =
   "<tr><th>Id</th><th>Next</th><th>MSG</th><th>Date</th></tr>";
+let countAll = 0;
 
 const infoTable = document.getElementById("infotable");
 
@@ -41,10 +42,10 @@ const fillTable = async (count = 5, offset = 0, table = infoTable) => {
 };
 const main = async () => {
   const resp = await fetch(`/api/count`);
-  const count = await resp.json();
-  document.getElementById("offset").value = count;
-  console.log(count);
-  fillTable(5, count, infoTable);
+  countAll = await resp.json();
+  document.getElementById("offset").value = countAll;
+  console.log(countAll);
+  fillTable(5, countAll, infoTable);
 };
 
 window.onload = main();
@@ -56,7 +57,7 @@ const changePage = (posNeg) => {
   if (count == NaN || offset == NaN) {
     return;
   }
-  const move = Math.max(count * posNeg + offset, 0);
+  const move = Math.min(Math.max(count * posNeg + offset, 0), countAll);
   document.getElementById("offset").value = move;
   fillTable(count, move, infoTable);
 };
