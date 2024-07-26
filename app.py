@@ -9,10 +9,10 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
-async def root(request: Request, nextLink: str = None, msg: str = None):
-	if nextLink and msg:
-		db.addLink(nextLink, msg)
-		return RedirectResponse(nextLink, status_code=302)
+async def root(request: Request, nextURL: str = None, msg: str = None):
+	if nextURL and msg:
+		db.addLink(nextURL, msg)
+		return RedirectResponse(nextURL, status_code=302)
 	ret = ""
 	with open("templates/index.html", "r") as ff:
 		ret = ff.read()
