@@ -43,7 +43,6 @@ class Database:
 			"SELECT * FROM linkUsage ORDER BY id OFFSET %s FETCH FIRST %s ROW ONLY",
 		(offset, count)
 		)
-		print(ret)
 		return [
 			{
 				'id':link[0], 
@@ -71,7 +70,6 @@ class Database:
 			)
 			return self.cur.fetchall()
 		except Exception as ee:
-			print(ee)
 			self.conn = self.connect()
 			self.query(query, args, tries - 1)
 
